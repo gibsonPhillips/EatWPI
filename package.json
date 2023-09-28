@@ -10,12 +10,12 @@
   "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/osiolabs/heynode.git"
+    "url": "https://github.com/gibsonPhillips/EatWPI"
   },
   "bugs": {
-    "url": "https://github.com/osiolabs/heynode/issues"
+    "url": ""
   },
-  "homepage": "https://github.com/osiolabs/heynode#readme",
+  "homepage": "https://github.com/gibsonPhillips/EatWPI/README.md",
   "keywords": [
     "express",
     "server"
