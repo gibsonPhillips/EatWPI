@@ -46,6 +46,10 @@ class LogisticRegression:
             Sigmoid of input values
         """
         # ===== Insert your code here =====
+        result = []
+        for Zed in z:
+            result.append(1 / (1 + np.exp(-Zed)))
+        return []
 
     def initialize_parameters(self, n_features):
         """
@@ -61,6 +65,7 @@ class LogisticRegression:
         """
         # Xavier initialization for better convergence
         # ===== Insert your code here =====
+
 
     def compute_loss(self, y_true, y_pred):
         """
