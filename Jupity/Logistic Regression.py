@@ -50,6 +50,7 @@ class LogisticRegression:
         for Zed in z:
             result.append(1 / (1 + np.exp(-Zed)))
         return []
+        # return 1 / (1 + np.exp(-z))
 
     def initialize_parameters(self, n_features):
         """
@@ -64,7 +65,8 @@ class LogisticRegression:
             Number of input features
         """
         # Xavier initialization for better convergence
-        # ===== Insert your code here =====
+        self.w = np.random.randn(n_features) * np.sqrt(1 / n_features)
+        self.b = 0.0  # Initialize bias to 0
 
 
     def compute_loss(self, y_true, y_pred):
@@ -119,7 +121,16 @@ class LogisticRegression:
         tuple
             Gradients for weights and bias
         """
-        # ===== Insert your code here =====
+        # sample size
+        N = X_batch.shape[0]
+
+# gradient for weight
+        dw = (1 / N) * np.dot(X_batch.T, (y_pred - y_batch))
+
+# weight for bias
+        db = (1 / N) * np.sum(y_pred - y_batch)
+
+        return(dw, db)
 
     def fit(self, X, y):
         """
@@ -142,30 +153,31 @@ class LogisticRegression:
         y : array-like of shape (n_samples,)
             Target values
         """
-        # Initialize Parameters
-        # ===== Insert your code here =====
+        n_samples, n_features = X.shape
+        self.initialize_parameters(n_features)
 
-        # Epoch Loop
         for epoch in range(self.n_epochs):
-            # Shuffle the data
-            # ===== Insert your code here =====
+            # Shuffle data
+            indices = np.random.permutation(n_samples)
+            X_shuffled = X[indices]
+            y_shuffled = y[indices]
 
             # Mini-batch training
             for i in range(0, n_samples, self.batch_size):
-                # Get Batch Data
-                # ===== Insert your code here =====
+                X_batch = X_shuffled[i:i + self.batch_size]
+                y_batch = y_shuffled[i:i + self.batch_size]
 
-                # Forward pass
-                # ===== Insert your code here =====
+                # Forward pass: compute predictions
+                linear_output = np.dot(X_batch, self.w) + self.b
+                y_pred = self.sigmoid(linear_output)
 
                 # Compute gradients
-                # ===== Insert your code here =====
+                dw, db = self.compute_gradients(X_batch, y_batch, y_pred)
 
                 # Update parameters
-                # ===== Insert your code here =====
-
-            # Calculate and trace the loss
-            # ===== Insert your code here =====
+                self.w -= self.learning_rate * dw
+                self.b -= self.learning_rate * db
+                w
 
 
     def predict_proba(self, X):
