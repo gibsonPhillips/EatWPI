@@ -177,7 +177,7 @@ class LogisticRegression:
                 # Update parameters
                 self.w -= self.learning_rate * dw
                 self.b -= self.learning_rate * db
-                w
+
 
 
     def predict_proba(self, X):
@@ -199,6 +199,11 @@ class LogisticRegression:
             Predicted probabilities
         """
         # ===== Insert your code here =====
+        linear_output = np.dot(X, self.w) + self.b
+
+        y_proba = self.sigmoid(linear_output)
+
+        return y_proba
 
     def predict(self, X, threshold=0.5):
         """
@@ -220,3 +225,8 @@ class LogisticRegression:
             Predicted class labels (0 or 1)
         """
         # ===== Insert your code here =====
+        y_proba = self.predict_proba(X)
+
+        y_pred = (y_proba >= threshold).astype(int)
+
+        return y_pred
