@@ -44,6 +44,12 @@ class SoftmaxRegression:
             Softmax probabilities for each class
         """
         # ===== Insert your code here =====
+        z_exp = np.exp(z - np.max(z, axis=1, keepdims=True))
+
+        # Divide by exponentials for each row
+        softmax_probs = z_exp / np.sum(z_exp, axis=1, keepdims=True)
+
+        return softmax_probs
 
     def initialize_parameters(self, n_features, n_classes):
         """
@@ -58,6 +64,13 @@ class SoftmaxRegression:
         """
         # Xavier initialization for weights
         # ===== Insert your code here =====
+
+        limit = np.sqrt(2 / (n_features + n_classes))
+        self.W = np.random.uniform(-limit, limit, (n_features, n_classes))
+
+        # Initialize biases to zero
+        self.b = np.zeros(n_classes)
+
 
     def compute_loss(self, y_true, y_pred):
         """
@@ -83,6 +96,14 @@ class SoftmaxRegression:
             Average cross-entropy loss
         """
         # ===== Insert your code here =====
+        # Clip y_pred to prevent log(0) errors and ensure numerical stability
+        y_pred = np.clip(y_pred, 1e-15, 1 - 1e-15)
+
+        loss = -np.sum(y_true * np.log(y_pred)) / y_true.shape[0]
+
+        return loss
+
+
 
     def compute_gradients(self, X_batch, y_batch, y_pred):
         """
@@ -108,6 +129,21 @@ class SoftmaxRegression:
         """
         # ===== Insert your code here =====
 
+        # current samples
+        batch_size = X_batch.shape[0]
+
+        # Calculate the error (difference between predicted and true labels)
+        error = y_pred - y_batch
+
+        # Gradient with respect to weights
+        dW = (1 / batch_size) * np.dot(X_batch.T, error)
+
+        # Gradient with respect to biases
+        db = (1 / batch_size) * np.sum(error, axis=0)
+
+        return dW, db
+
+
     def fit(self, X, y):
         """
         Train the softmax regression model using mini-batch SGD.
@@ -131,28 +167,46 @@ class SoftmaxRegression:
         """
         # Initialize Parameters
         # ===== Insert your code here =====
+        n_samples,n_features = X.shape
+        n_classes = len(np.unique(y))
+
+        self.initialize_parameters(n_features, n_classes)
+
+        y_one_hot = np.eye(n_classes)[y]
 
         # Epoch Loop
         for epoch in range(self.n_epochs):
             # Shuffle the data
-            # ===== Insert your code here =====
+            indices = np.arrange(n_samples)
+            np.random.shuffle(indices)
+            X_shuffled = X[indices]
+            y_shuffled = y_one_hot[indices]
 
             # Mini-batch training
             for i in range(0, n_samples, self.batch_size):
                 # Get Batch Data
-                # ===== Insert your code here =====
+                X_batch = X_shuffled[i:i + self.batch_size]
+                y_batch = y_shuffled[i:i + self.batch_size]
+
 
                 # Forward pass
-                # ===== Insert your code here =====
+                z = np.dot(X_batch, self.W) + self.b
+                y_pred = self.softmax(z)
+
 
                 # Compute gradients
-                # ===== Insert your code here =====
+                dw,db = self.compute_gradients(X_batch, y_batch, y_pred)
+
 
                 # Update parameters
-                # ===== Insert your code here =====
+                self.w -= self.learning_rate * dw
+                self.b -= self.learning_rate * db
 
             # Calculate and trace the loss
-            # ===== Insert your code here =====
+            z_all = np.dot(X, self.W) + self.b
+            y_pred_all = self.softmax(z_all)
+            loss = self.compute_loss(y_one_hot, y_pred_all)
+            print(f"Epoch {epoch+1}/{self.n_epochs}, lose: {loss:.4f}")
 
 
     def predict_proba(self, X):
@@ -170,6 +224,11 @@ class SoftmaxRegression:
             Predicted probabilities for each class
         """
         # ===== Insert your code here =====
+        z = np.dot(X, self.W) + self.b
+
+        y_pred_proba = self.softmax(z)
+
+        return y_pred_proba
 
     def predict(self, X):
         """
@@ -189,3 +248,8 @@ class SoftmaxRegression:
             Predicted class labels
         """
         # ===== Insert your code here =====
+        y_pred_proda = self.predict_proba(X)
+
+        y_pred = np.argmax(y_pred_proda, axis=1)
+
+        return y_pred
