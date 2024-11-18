@@ -1,3 +1,3 @@
-# CSML HW2
+# CSML HW3
 
-This is assignemtn 2 for CS Machine Learning
+This is assignment 3 for CS Machine Learning WPI
